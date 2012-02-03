@@ -8,11 +8,11 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
@@ -20,8 +20,7 @@ import org.apache.hadoop.util.ToolRunner;
 public class LineCount extends Configured implements Tool{
   @Override
   public int run(String[] args) throws Exception {
-    JobConf conf = new JobConf(new Configuration(), LineCount.class);
-    FileSystem fs = FileSystem.get(conf);
+    FileSystem fs = FileSystem.get(new Configuration());
     FileStatus[] fileStatuses = fs.listStatus(new Path(args[0]));
     Path inputPath = new Path("input-distlinecount");
     FSDataOutputStream fout= fs.create(inputPath);
@@ -31,7 +30,7 @@ public class LineCount extends Configured implements Tool{
     }
     fout.close();
 
-    Job job = new Job(conf);
+    Job job = new Job(new Configuration());
     FileInputFormat.addInputPath(job, inputPath) ;
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     job.setJobName("distributed-linecount");
@@ -41,7 +40,7 @@ public class LineCount extends Configured implements Tool{
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(LongWritable.class);
     job.setInputFormatClass(TextInputFormat.class);
-    job.setOutputFormatClass(FileOutputFormat.class);
+    job.setOutputFormatClass(TextOutputFormat.class);
     job.waitForCompletion(true);
     if(job.isSuccessful()) {
       System.out.println("job is success");
