@@ -15,7 +15,7 @@ public class LineCountMapper<k,v> extends Mapper<LongWritable, Text, Text,
     try {
     // using fileinput format so key is line number
     String fileName = value.toString();
-    FileSystem fs;
+    FileSystem  fs;
     fs = FileSystem.get(context.getConfiguration());
     FSDataInputStream fin = fs.open(new Path(fileName));
     long linecount=0;
